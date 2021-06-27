@@ -1,8 +1,15 @@
 # API Mongo App
 
-Pasos a tener en cuenta para la utilización:
+## Requisitos para la utilización
+- Instalar maven sigan los pasos del [video](https://www.youtube.com/watch?v=C_RFcuHf3ao)
+- Descargar JDK desde [aqui](https://adoptopenjdk.net/) version 11 LTS con JVM OpenJ9
+- Agregar el PATH de la ubicación de la instalación del JDK 11 en las variables de entornos, crando una nueva variable `JAVA_HOME`
+- Verificar que el JDK 11 esta en el Netbeans, abren netbeans, luego se van a  `tools`, luego a `java`, luego a `maven`, luego verifican el `Default JDK` que este JDK 11.
 
-1- Clonar el archivo
+
+## Pasos a tener en cuenta para la utilización:
+
+1- Clonar o descargar el repositorio
 
 2- Dar click derecho al proyecto y clean and build
 
@@ -14,7 +21,7 @@ Pasos a tener en cuenta para la utilización:
 Username= user
 Password= admin
 
-# Cuenta con los siguientes endpoinst:
+# Cuenta con los siguientes Endpoints:
 
 ## Reportes
 
