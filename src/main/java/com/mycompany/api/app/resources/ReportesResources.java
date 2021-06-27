@@ -11,6 +11,7 @@ import com.mycompany.api.app.repository.ReporteRepository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.annotation.security.RolesAllowed;
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.Response;
  *
  * @author villa
  */
+@RolesAllowed("admin")
 @Path("/reportes")
 public class ReportesResources {
 

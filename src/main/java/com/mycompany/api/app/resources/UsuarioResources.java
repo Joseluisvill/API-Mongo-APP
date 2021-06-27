@@ -5,6 +5,7 @@
  */
 package com.mycompany.api.app.resources;
 
+import com.mycompany.api.app.encrypt.Encrypt;
 import com.mycompany.api.app.entitys.Usuario;
 import com.mycompany.api.app.repository.UsuarioRepository;
 import java.util.List;
@@ -45,6 +46,8 @@ public class UsuarioResources {
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response agregarUsuario(Usuario usuario) {
+        String pass = usuario.getContrasena();
+        usuario.setContrasena(Encrypt.sha256(pass));
         try {
             if (usuariorepository.save(usuario)) {
                 return Response.status(201).entity("Se creo el Usuario").build();
@@ -56,7 +59,7 @@ public class UsuarioResources {
             return Response.status(401).entity(e.getLocalizedMessage()).build();
         }
     }
-    
+
     //Actualizar usuario
     @POST
     @Path("/update")
@@ -73,15 +76,15 @@ public class UsuarioResources {
             return Response.status(401).entity(e.getLocalizedMessage()).build();
         }
     }
-    
+
     //Eliminar usuario
     @DELETE
     @Path("/delete/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response eliminarUsuario(@PathParam("id") String id) {
         try {
-            if (usuariorepository.delete(new Document("identificador",id))) {
-                return Response.status(201).entity("Se elimino el Usuario "+id).build();
+            if (usuariorepository.delete(new Document("identificador", id))) {
+                return Response.status(201).entity("Se elimino el Usuario " + id).build();
             } else {
                 return Response.status(400)
                         .entity(usuariorepository.getException().getLocalizedMessage()).build();
@@ -90,9 +93,42 @@ public class UsuarioResources {
             return Response.status(401).entity(e.getLocalizedMessage()).build();
         }
     }
-    
-    //Buscar usuario por ID
+
+    //Verificar si el usuario existe
     @GET
+    @Path("/checkUsuario")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response buscarUsuario(Usuario usuario) {
+        //convierto el password a sha256
+        System.out.println("usuario" + usuario.getNombre());
+        try {
+
+            String pass = usuario.getContrasena();
+            usuario.setContrasena(Encrypt.sha256(pass));
+
+            //Document doc = new Document("nombre", "ana");
+            String query = "select * from Usuario where nombre='" + usuario.getNombre()
+                    + "'" + " and contrasena='" + usuario.getContrasena() + "'";
+            //.append("contrasena", usuario.getContrasena());
+            Usuario otro = new Usuario();
+
+            Optional<Usuario> optional = usuariorepository.findById(query);
+            otro = optional.get();
+            System.out.println("usuario" + otro.toString());
+            if (optional.isPresent()) {
+                return Response.status(201).entity("Existe el usuario").build();
+            } else {
+                return Response.status(400)
+                        .entity(usuariorepository.getException().getLocalizedMessage()).build();
+
+            }
+        } catch (Exception e) {
+            return Response.status(401).entity(e.getLocalizedMessage()).build();
+        }
+    }
+
+    //Buscar usuario por ID
+    /*@GET
     @Path("/search/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Usuario buscarIdUsuario(@PathParam("id") String id) {
@@ -107,6 +143,5 @@ public class UsuarioResources {
             System.out.print("error"+e.getLocalizedMessage());
         }
         return usuario;
-    }
-
+    }*/
 }
