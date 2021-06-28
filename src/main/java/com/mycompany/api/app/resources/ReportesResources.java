@@ -48,7 +48,6 @@ public class ReportesResources {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response agregarReporte(Reportes reporte) {
         try {
-            //System.out.println(reporte.getDescripcion() + "," + reporte.getUbicacion() + "," + reporte.getEstados());
             if (reporteRepository.save(reporte, false)) {
                 return Response.status(201)
                         .entity("Se creo el Reporte")
@@ -62,31 +61,28 @@ public class ReportesResources {
             return Response.status(401)
                     .entity(e.getLocalizedMessage()).build();
         }
-
     }
 
     //Agregar estados al mismo reporte con el identificador del Reporte
     @PUT
     @Path("/addEstado/{identificador}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response agregarEstadoReporte(@PathParam("identificador")String id,Estado estado) {
-        //System.out.println(estado.getIdentificador() + "," + estado.getComentario()+","+id);
+    public Response agregarEstadoReporte(@PathParam("identificador") String id, Estado estado) {
         Reportes reporte = new Reportes();
         reporte.setIdentificador(id);
-        
-        //System.out.println(reporte.getIdentificador());
+
         //busco el reporte para actualizar
         Optional<Reportes> optional = reporteRepository.findById(reporte);
-        //lo agrego a un nuevo reporte para almacenarlo
-        reporte=optional.get();
-        //System.out.println(reporte.getDescripcion());
-        
+
+        //agrego los datos de la busqueda al nuevo reporte
+        reporte = optional.get();
+
+        //Creo una lista para agregar al nuevo estado con los anteriores
         List<Estado> list = new ArrayList<Estado>();
-        list=reporte.getEstados();
+        list = reporte.getEstados();
         list.add(estado);
         //le adapto el nuevo estado a la lista de estados anteriores
         reporte.setEstados(list);
-        //actualizo el reporte
         try {
             if (reporteRepository.update(reporte)) {
                 return Response.status(201).entity("Update Ok").build();
@@ -99,11 +95,26 @@ public class ReportesResources {
         }
     }
 
-    //Actualizar reporte dependiendo del identificador
+    //Actualizar reporte dependiendo del identificador, pero se seguiran manteniendo los estados anteriores
     @PUT
-    @Path("/update")
+    @Path("/update/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response actualizarReporte(Reportes reporte) {
+    public Response actualizarReporte(@PathParam("id") String id,Reportes reporte) {
+        Reportes re = new Reportes();
+        re.setIdentificador(id);
+
+        //busco el reporte para actualizar
+        Optional<Reportes> optional = reporteRepository.findById(re);
+
+        //agrego los datos de la busqueda al nuevo reporte
+        re = optional.get();
+
+        //Creo una lista para agregar al nuevo estado con los anteriores
+        List<Estado> list = new ArrayList<Estado>();
+        list = re.getEstados();
+        
+        //le adapto el nuevo estado a la lista de estados anteriores
+        reporte.setEstados(list);
         try {
             if (reporteRepository.update(reporte)) {
                 return Response.status(201).entity("Update Ok").build();

@@ -16,6 +16,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -49,7 +50,7 @@ public class UsuarioResources {
         String pass = usuario.getContrasena();
         usuario.setContrasena(Encrypt.sha256(pass));
         try {
-            if (usuariorepository.save(usuario)) {
+            if (usuariorepository.save(usuario,false)) {
                 return Response.status(201).entity("Se creo el Usuario").build();
             } else {
                 return Response.status(400)
@@ -61,7 +62,7 @@ public class UsuarioResources {
     }
 
     //Actualizar usuario
-    @POST
+    @PUT
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response actualizarUsuario(Usuario usuario) {
@@ -95,32 +96,25 @@ public class UsuarioResources {
     }
 
     //Verificar si el usuario existe
-    @GET
+    @POST
     @Path("/checkUsuario")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response buscarUsuario(Usuario usuario) {
-        //convierto el password a sha256
-        System.out.println("usuario" + usuario.getNombre());
         try {
-
+            //convierto el password a sha256
             String pass = usuario.getContrasena();
             usuario.setContrasena(Encrypt.sha256(pass));
 
-            //Document doc = new Document("nombre", "ana");
-            String query = "select * from Usuario where nombre='" + usuario.getNombre()
-                    + "'" + " and contrasena='" + usuario.getContrasena() + "'";
-            //.append("contrasena", usuario.getContrasena());
-            Usuario otro = new Usuario();
+            //String del query para la busqueda del usuario
+            String query = "select * from Usuario where nombre ='" + usuario.getNombre() + "' and contrasena = '" + usuario.getContrasena() + "'";
 
             Optional<Usuario> optional = usuariorepository.findById(query);
-            otro = optional.get();
-            System.out.println("usuario" + otro.toString());
+
             if (optional.isPresent()) {
                 return Response.status(201).entity("Existe el usuario").build();
             } else {
                 return Response.status(400)
                         .entity(usuariorepository.getException().getLocalizedMessage()).build();
-
             }
         } catch (Exception e) {
             return Response.status(401).entity(e.getLocalizedMessage()).build();
@@ -128,20 +122,20 @@ public class UsuarioResources {
     }
 
     //Buscar usuario por ID
-    /*@GET
+    @GET
     @Path("/search/{id}")
     @Produces(MediaType.APPLICATION_JSON)
     public Usuario buscarIdUsuario(@PathParam("id") String id) {
-        Usuario usuario=new Usuario();
-        try {    
+        Usuario usuario = new Usuario();
+        try {
             usuario.setIdentificador(id);
-            Optional<Usuario> optional= usuariorepository.findById(usuario);
+            Optional<Usuario> optional = usuariorepository.findById(usuario);
             if (optional.isPresent()) {
                 return optional.get();
-            } 
+            }
         } catch (Exception e) {
-            System.out.print("error"+e.getLocalizedMessage());
+            System.out.print("error" + e.getLocalizedMessage());
         }
         return usuario;
-    }*/
+    }
 }
