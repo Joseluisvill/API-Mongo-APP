@@ -18,7 +18,6 @@ public class Encrypt {
         String sha256hex = Hashing.sha256()
                 .hashString(pass, StandardCharsets.UTF_8)
                 .toString();
-
         return sha256hex;
     }
 }

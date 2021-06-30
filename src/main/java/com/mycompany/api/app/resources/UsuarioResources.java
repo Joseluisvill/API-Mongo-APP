@@ -50,7 +50,7 @@ public class UsuarioResources {
         String pass = usuario.getContrasena();
         usuario.setContrasena(Encrypt.sha256(pass));
         try {
-            if (usuariorepository.save(usuario,false)) {
+            if (usuariorepository.save(usuario, false)) {
                 return Response.status(201).entity("Se creo el Usuario").build();
             } else {
                 return Response.status(400)
@@ -66,6 +66,8 @@ public class UsuarioResources {
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response actualizarUsuario(Usuario usuario) {
+        String pass = usuario.getContrasena();
+        usuario.setContrasena(Encrypt.sha256(pass));
         try {
             if (usuariorepository.update(usuario)) {
                 return Response.status(201).entity("Update Ok").build();

@@ -47,6 +47,16 @@ public class ReportesResources {
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response agregarReporte(Reportes reporte) {
+        //para obtener el ultimo estadpo
+        List<Estado> list = new ArrayList<Estado>();
+        Estado es= new Estado();
+        //obtengo el ultimo estado de la lista de estados
+        list = reporte.getEstados();
+        es=list.get(list.size()-1);
+        
+        //agrego el ultimo estado de la lista al reporte
+        reporte.setEstado(es.getEstado());
+        
         try {
             if (reporteRepository.save(reporte, false)) {
                 return Response.status(201)
@@ -83,6 +93,9 @@ public class ReportesResources {
         list.add(estado);
         //le adapto el nuevo estado a la lista de estados anteriores
         reporte.setEstados(list);
+        //agrego el nombre de estado recibido al reporte
+        reporte.setEstado(estado.getEstado());
+       
         try {
             if (reporteRepository.update(reporte)) {
                 return Response.status(201).entity("Update Ok").build();
@@ -115,6 +128,7 @@ public class ReportesResources {
         
         //le adapto el nuevo estado a la lista de estados anteriores
         reporte.setEstados(list);
+        
         try {
             if (reporteRepository.update(reporte)) {
                 return Response.status(201).entity("Update Ok").build();
@@ -125,5 +139,23 @@ public class ReportesResources {
         } catch (Exception e) {
             return Response.status(401).entity(e.getLocalizedMessage()).build();
         }
+    }
+    
+    //Buscar un reporte en especifico por el identificador
+    @GET
+    @Path("/search/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Reportes buscarIdReporte(@PathParam("id") String id) {
+        Reportes reporte = new Reportes();
+        try {
+            reporte.setIdentificador(id);
+            Optional<Reportes> optional = reporteRepository.findById(reporte);
+            if (optional.isPresent()) {
+                return optional.get();
+            }
+        } catch (Exception e) {
+            System.out.print("error" + e.getLocalizedMessage());
+        }
+        return reporte;
     }
 }

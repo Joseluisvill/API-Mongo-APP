@@ -13,26 +13,36 @@ import java.util.List;
  *
  * @author villa
  */
-
 public class Reportes {
+
     @Id
     private String identificador;
     private String descripcion;
     @Embedded
     private List<Coordenadas> ubicacion;
     private String imagen;
+    private String estado;
     @Embedded
     private List<Estado> estados;
 
-    public Reportes(){
+    public Reportes() {
     }
 
-    public Reportes(String descripcion, List<Coordenadas> ubicacion, String imagen, List<Estado> estados,String identificador) {
+    public Reportes(String descripcion, List<Coordenadas> ubicacion, String imagen, List<Estado> estados, String identificador, String estado) {
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;
         this.imagen = imagen;
         this.estados = estados;
-        this.identificador=identificador;
+        this.identificador = identificador;
+        this.estado = estado;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
     }
 
     public String getIdentificador() {
@@ -42,8 +52,6 @@ public class Reportes {
     public void setIdentificador(String identificador) {
         this.identificador = identificador;
     }
-
-    
 
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
@@ -76,6 +84,5 @@ public class Reportes {
     public List<Estado> getEstados() {
         return estados;
     }
-    
-    
+
 }
