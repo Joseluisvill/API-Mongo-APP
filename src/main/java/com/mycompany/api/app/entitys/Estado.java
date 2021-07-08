@@ -5,38 +5,49 @@
  */
 package com.mycompany.api.app.entitys;
 
-import com.avbravo.jmoordb.anotations.DatePattern;
+import com.avbravo.jmoordb.anotations.Ignore;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-
 
 /**
  *
  * @author villa
  */
 public class Estado {
+
     private String identificador;
-    @DatePattern
     private Date fecha;
     private String comentario;
     private String estado;
-    
-    public Estado(){
+    @Ignore
+    private String fechaString;
+
+    public Estado() {
     }
-    
-    public Estado(String identificador, Date fecha, String comentario, String estado) {
+
+    public Estado(String identificador, String fechaString, String comentario, Date fecha, String estado) {
         this.identificador = identificador;
+        this.fechaString = fechaString;
         this.fecha = fecha;
         this.comentario = comentario;
         this.estado = estado;
     }
 
+    public String getFechaString() {
+        return fechaString;
+    }
 
+    public void setFechaString(String fechaString) {
+        this.fechaString = fechaString;
+    }
 
     public void setIdentificador(String identificador) {
         this.identificador = identificador;
     }
 
     public void setFecha(Date fecha) {
+        //System.out.println("set"+fecha);
+
         this.fecha = fecha;
     }
 
@@ -53,6 +64,7 @@ public class Estado {
     }
 
     public Date getFecha() {
+        // System.out.println("get"+fecha);
         return fecha;
     }
 

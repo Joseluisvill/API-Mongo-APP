@@ -5,9 +5,9 @@
  */
 package com.mycompany.api.app.resources;
 
-import com.mycompany.api.app.encrypt.Encrypt;
 import com.mycompany.api.app.entitys.Usuario;
 import com.mycompany.api.app.repository.UsuarioRepository;
+import com.mycompany.api.services.UsuarioServices;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.security.RolesAllowed;
@@ -35,6 +35,9 @@ public class UsuarioResources {
     @Inject
     UsuarioRepository usuariorepository;
 
+    @Inject
+    UsuarioServices usuarioservices;
+
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
@@ -47,9 +50,27 @@ public class UsuarioResources {
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response agregarUsuario(Usuario usuario) {
-        String pass = usuario.getContrasena();
-        usuario.setContrasena(Encrypt.sha256(pass));
+       Usuario u=usuarioservices.add(usuario);
         try {
+            if (usuariorepository.save(u, false)) {
+                return Response.status(201).entity("Se creo el Usuario").build();
+            } else {
+                return Response.status(400)
+                        .entity(usuariorepository.getException().getLocalizedMessage()).build();
+            }
+        } catch (Exception e) {
+            return Response.status(401).entity(e.getLocalizedMessage()).build();
+        }
+    }
+
+    //Crear Usuario desde android
+    @POST
+    @Path("/addCaptador")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response agregarUsuarioCaptador(Usuario usuario) {
+
+        try {
+            usuario = usuarioservices.addUsuarioCaptador(usuario);
             if (usuariorepository.save(usuario, false)) {
                 return Response.status(201).entity("Se creo el Usuario").build();
             } else {
@@ -61,15 +82,15 @@ public class UsuarioResources {
         }
     }
 
-    //Actualizar usuario
+    //Actualizar usuario, mantengo los roles anteriores
     @PUT
     @Path("/update")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response actualizarUsuario(Usuario usuario) {
-        String pass = usuario.getContrasena();
-        usuario.setContrasena(Encrypt.sha256(pass));
         try {
-            if (usuariorepository.update(usuario)) {
+            Usuario u = usuarioservices.actulizar(usuario);
+            if (usuariorepository.update(u)) {
+
                 return Response.status(201).entity("Update Ok").build();
             } else {
                 return Response.status(400)
@@ -103,15 +124,7 @@ public class UsuarioResources {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response buscarUsuario(Usuario usuario) {
         try {
-            //convierto el password a sha256
-            String pass = usuario.getContrasena();
-            usuario.setContrasena(Encrypt.sha256(pass));
-
-            //String del query para la busqueda del usuario
-            String query = "select * from Usuario where nombre ='" + usuario.getNombre() + "' and contrasena = '" + usuario.getContrasena() + "'";
-
-            Optional<Usuario> optional = usuariorepository.findById(query);
-
+            Optional<Usuario> optional = usuarioservices.checkusuario(usuario);
             if (optional.isPresent()) {
                 return Response.status(201).entity("Existe el usuario").build();
             } else {
@@ -139,5 +152,25 @@ public class UsuarioResources {
             System.out.print("error" + e.getLocalizedMessage());
         }
         return usuario;
+    }
+
+    //Asignar rol a un usuario, con el id usuario y el id del rol
+    @PUT
+    @Path("/addRole/{idUsuario}/{idRole}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response asignarRol(@PathParam("idUsuario") String idUsuario, @PathParam("idRole") int idRole) {
+
+        try {
+            Usuario usuario = usuarioservices.addRol(idUsuario, idRole);
+            if (usuariorepository.update(usuario)) {
+                return Response.status(201).entity("Update Ok").build();
+            } else {
+                return Response.status(400)
+                        .entity(usuariorepository.getException().getLocalizedMessage()).build();
+            }
+        } catch (Exception e) {
+            System.out.print("error" + e.getLocalizedMessage());
+            return Response.status(401).entity(e.getLocalizedMessage()).build();
+        }
     }
 }

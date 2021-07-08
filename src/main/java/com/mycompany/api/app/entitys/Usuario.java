@@ -5,30 +5,61 @@
  */
 package com.mycompany.api.app.entitys;
 
+import com.avbravo.jmoordb.anotations.Embedded;
 import com.avbravo.jmoordb.anotations.Id;
+import java.util.List;
 
 /**
  *
  * @author villa
  */
 public class Usuario {
+
     @Id
     private String identificador;
     private String nombre;
     private String contrasena;
     private String email;
-    private String tel;
-    private String rol;
-    
-    public Usuario(){
-}
-    public Usuario(String identificador, String nombre, String contrasena, String email, String tel, String rol) {
+    private String telefono;
+    private boolean activo;
+    @Embedded
+    private List<RolesAsignados> roles;
+
+    public Usuario() {
+    }
+
+    public Usuario(String identificador, String nombre, String contrasena, String email, String telefono, boolean activo, List<RolesAsignados> roles) {
         this.identificador = identificador;
         this.nombre = nombre;
         this.contrasena = contrasena;
         this.email = email;
-        this.tel = tel;
-        this.rol = rol;
+        this.telefono = telefono;
+        this.activo = activo;
+        this.roles = roles;
+    }
+
+    public List<RolesAsignados> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<RolesAsignados> roles) {
+        this.roles = roles;
+    }
+
+    public boolean isActivo() {
+        return activo;
+    }
+
+    public void setActivo(boolean activo) {
+        this.activo = activo;
+    }
+
+    public String getTelefono() {
+        return telefono;
+    }
+
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
     }
 
     public String getIdentificador() {
@@ -47,14 +78,6 @@ public class Usuario {
         return email;
     }
 
-    public String getTel() {
-        return tel;
-    }
-
-    public String getRol() {
-        return rol;
-    }
-
     public void setIdentificador(String identificador) {
         this.identificador = identificador;
     }
@@ -69,13 +92,5 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public void setTel(String tel) {
-        this.tel = tel;
-    }
-
-    public void setRol(String rol) {
-        this.rol = rol;
     }
 }

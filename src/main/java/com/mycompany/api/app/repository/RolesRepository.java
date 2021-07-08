@@ -5,20 +5,19 @@
  */
 package com.mycompany.api.app.repository;
 
-import com.avbravo.jmoordb.mongodb.history.services.AutoincrementableServices;
 import com.avbravo.jmoordb.mongodb.repository.Repository;
-import com.mycompany.api.app.entitys.Reportes;
+import com.mycompany.api.app.entitys.Roles;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 
 /**
  *
  * @author villa
  */
 @Stateless
-public class ReporteRepository extends Repository<Reportes> {
+public class RolesRepository extends Repository<Roles> {
 
-    public ReporteRepository() {
-        super(Reportes.class, "App", "Reportes");
+    public RolesRepository() {
+        super(Roles.class, "App", "Roles");
     }
+
 }

@@ -5,8 +5,11 @@
  */
 package com.mycompany.api.app.entitys;
 
+import com.avbravo.jmoordb.anotations.DatePattern;
 import com.avbravo.jmoordb.anotations.Embedded;
 import com.avbravo.jmoordb.anotations.Id;
+import com.avbravo.jmoordb.anotations.Ignore;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -18,23 +21,55 @@ public class Reportes {
     @Id
     private String identificador;
     private String descripcion;
+    private Date fecha;
     @Embedded
     private List<Coordenadas> ubicacion;
     private String imagen;
     private String estado;
+    private String identificadorUsuario;
     @Embedded
     private List<Estado> estados;
+    @Ignore
+    private String fechaString;
 
     public Reportes() {
     }
 
-    public Reportes(String descripcion, List<Coordenadas> ubicacion, String imagen, List<Estado> estados, String identificador, String estado) {
+    public Reportes(String descripcion, List<Coordenadas> ubicacion, String imagen, List<Estado> estados, String identificador, String estado, String identificadorUsuario, Date fecha, String fechaString) {
         this.descripcion = descripcion;
         this.ubicacion = ubicacion;
         this.imagen = imagen;
         this.estados = estados;
         this.identificador = identificador;
         this.estado = estado;
+        this.identificadorUsuario = identificadorUsuario;
+        this.fecha = fecha;
+        this.fechaString = fechaString;
+    }
+
+    public String getFechaString() {
+        return fechaString;
+    }
+
+    public void setFechaString(String fechaString) {
+        this.fechaString = fechaString;
+    }
+
+
+    public Date getFecha() {
+        return fecha;
+    }
+
+    public void setFecha(Date fecha) {
+        this.fecha = fecha;
+    }
+
+    public String getIdentificadorUsuario() {
+        return identificadorUsuario;
+    }
+
+    public void setIdentificadorUsuario(String identificadorUsuario) {
+        this.identificadorUsuario = identificadorUsuario;
     }
 
     public String getEstado() {
