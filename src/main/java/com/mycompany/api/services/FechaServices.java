@@ -9,6 +9,9 @@ import com.mycompany.api.app.entitys.Estado;
 import com.mycompany.api.app.entitys.Reportes;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import javax.ejb.Stateless;
 
@@ -22,26 +25,17 @@ public class FechaServices {
     public FechaServices() {
     }
 
-    public Date fechaReporteEstado(Estado estado) throws ParseException {
+    public Date fechaActual() throws ParseException {
         try {
-            //Para convertir la fechas 
-            SimpleDateFormat formato = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
-            Date fechaa = formato.parse(estado.getFechaString());
-            return fechaa;
+            //obtiene fecha instantanea
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat formato = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime now = LocalDateTime.now();
+            String a = now.format(dtf);
+            Date fecha = formato.parse(a);
+            return fecha;
         } catch (Exception e) {
             System.out.println("fechaReporteEstado() " + e.getLocalizedMessage());
-        }
-        return null;
-    }
-
-    public Date fechaReporte(Reportes reporte) throws ParseException {
-        try {
-            //Para convertir la fechas 
-            SimpleDateFormat formato = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
-            Date fechaa = formato.parse(reporte.getFechaString());
-            return fechaa;
-        } catch (Exception e) {
-            System.out.println("fechaReporte() " + e.getLocalizedMessage());
         }
         return null;
     }

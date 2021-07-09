@@ -10,6 +10,7 @@ import com.mycompany.api.app.entitys.Reportes;
 import com.mycompany.api.app.repository.ReporteRepository;
 import com.mycompany.api.services.ReporteServices;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,22 +52,16 @@ public class ReportesResources {
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response agregarReporte(Reportes reporte) {
+    public Reportes agregarReporte(Reportes reporte) {
         try {
-            reporte=reporteServices.add(reporte);
+            reporte = reporteServices.add(reporte);
             if (reporteRepository.save(reporte, false)) {
-                return Response.status(201)
-                        .entity("Se creo el Reporte")
-                        .build();
-            } else {
-                return Response.status(400)
-                        .entity(reporteRepository.getException().getLocalizedMessage())
-                        .build();
+                return reporte;
             }
         } catch (Exception e) {
-            return Response.status(401)
-                    .entity(e.getLocalizedMessage()).build();
+            System.out.println("agregarReporte() " + e.getLocalizedMessage());
         }
+        return reporte;
     }
 
     //Agregar estados al mismo reporte con el identificador del Reporte
@@ -96,7 +91,7 @@ public class ReportesResources {
     public Response actualizarReporte(@PathParam("id") String id, Reportes reporte) {
 
         try {
-            reporte= reporteServices.actualizar(id, reporte);
+            reporte = reporteServices.actualizar(id, reporte);
             if (reporteRepository.update(reporte)) {
                 return Response.status(201).entity("Update Ok").build();
             } else {
@@ -118,7 +113,11 @@ public class ReportesResources {
             reporte.setIdentificador(id);
             Optional<Reportes> optional = reporteRepository.findById(reporte);
             if (optional.isPresent()) {
-                return optional.get();
+                reporte = optional.get();
+                //parseo fecha
+                SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd");
+                reporte.setFechaString(dateFormatter.format(reporte.getFecha()));
+                return reporte;
             }
         } catch (Exception e) {
             System.out.print("error" + e.getLocalizedMessage());

@@ -6,8 +6,11 @@
 package com.mycompany.api.app.entitys;
 
 import com.avbravo.jmoordb.anotations.Ignore;
+import com.mycompany.api.services.FechaServices;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import javax.inject.Inject;
 
 /**
  *
@@ -15,6 +18,7 @@ import java.util.Date;
  */
 public class Estado {
 
+    private int id;
     private String identificador;
     private Date fecha;
     private String comentario;
@@ -25,12 +29,21 @@ public class Estado {
     public Estado() {
     }
 
-    public Estado(String identificador, String fechaString, String comentario, Date fecha, String estado) {
+    public Estado(String identificador, String fechaString, String comentario, Date fecha, String estado, int id) {
         this.identificador = identificador;
         this.fechaString = fechaString;
         this.fecha = fecha;
         this.comentario = comentario;
         this.estado = estado;
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getFechaString() {
@@ -46,8 +59,6 @@ public class Estado {
     }
 
     public void setFecha(Date fecha) {
-        //System.out.println("set"+fecha);
-
         this.fecha = fecha;
     }
 
@@ -64,7 +75,11 @@ public class Estado {
     }
 
     public Date getFecha() {
-        // System.out.println("get"+fecha);
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd");
+        if (fecha != null) {
+            String a = dateFormatter.format(fecha);
+            setFechaString(a);
+        }
         return fecha;
     }
 

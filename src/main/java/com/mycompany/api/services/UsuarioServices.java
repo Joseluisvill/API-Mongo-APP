@@ -15,6 +15,9 @@ import java.util.Optional;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import com.mycompany.api.app.encrypt.AES;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
 /**
  *
  * @author villa
@@ -24,6 +27,10 @@ public class UsuarioServices {
 
     @Inject
     UsuarioRepository usuariorepository;
+
+    @Inject
+    @ConfigProperty(name = "secretKey")
+    private String secretKey;
 
     public UsuarioServices() {
     }
@@ -98,9 +105,18 @@ public class UsuarioServices {
         return usuario;
     }
 
+    public List<Usuario> allActivos() {
+        String query = "select * from Usuario where activo='" + true + "'";
+
+        List<Usuario> list = usuariorepository.findBy(query);
+        return list;
+    }
+
     public Optional checkusuario(Usuario usuario) {
 
         try {
+            //System.out.println(usuario.getEmail());
+            //System.out.println(AES.encrypt(usuario.getEmail(), secretKey));
             //convierto el password a sha256
             String pass = usuario.getContrasena();
             usuario.setContrasena(Encrypt.sha256(pass));

@@ -9,6 +9,7 @@ import com.mycompany.api.app.entitys.Estado;
 import com.mycompany.api.app.entitys.Reportes;
 import com.mycompany.api.app.repository.ReporteRepository;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,16 +22,19 @@ import javax.inject.Inject;
  */
 @Stateless
 public class ReporteServices {
-
+    
     @Inject
     ReporteRepository reporteRepository;
-
+    
     @Inject
     FechaServices fechaservices;
-
+    
+    @Inject
+    CollectionincrementableServices collectionincrementableServices;
+    
     public ReporteServices() {
     }
-
+    
     public Reportes addEstado(Estado estado, String id) throws ParseException {
         Reportes reporte = new Reportes();
         reporte.setIdentificador(id);
@@ -40,23 +44,25 @@ public class ReporteServices {
         try {
             //agrego los datos de la busqueda al nuevo reporte
             reporte = optional.get();
-
-            estado.setFecha(fechaservices.fechaReporteEstado(estado));
+            
+            estado.setFecha(fechaservices.fechaActual());
             //Creo una lista para agregar al nuevo estado con los anteriores
             List<Estado> list = new ArrayList<Estado>();
             list = reporte.getEstados();
             list.add(estado);
+            //id del estado
+            estado.setId(list.size());
             //le adapto el nuevo estado a la lista de estados anteriores
             reporte.setEstados(list);
             reporte.setEstado(estado.getEstado());
-
+            
             return reporte;
         } catch (Exception e) {
             System.out.println("addEstado() " + e.getLocalizedMessage());
         }
         return reporte;
     }
-
+    
     public Reportes actualizar(String id, Reportes reporte) {
         Reportes re = new Reportes();
         //re.setIdentificador(id);
@@ -76,22 +82,24 @@ public class ReporteServices {
                 reporte.setEstados(list);
                 //mantengo el estado anterior tambien
                 reporte.setEstado(re.getEstado());
-
-                reporte.setFecha(fechaservices.fechaReporte(reporte));
+                
+                reporte.setFecha(fechaservices.fechaActual());
                 return reporte;
             } else {
                 System.out.println("No esta presente");
             }
-
+            
         } catch (Exception e) {
             System.out.println("actualizar() " + e.getLocalizedMessage());
         }
         return reporte;
     }
-
+    
     public Reportes add(Reportes reporte) throws ParseException {
-        reporte.setFecha(fechaservices.fechaReporte(reporte));
+        reporte.setIdentificador("Reporte " + collectionincrementableServices.generate("Reportes").getCount().toString());
+        reporte.setFecha(fechaservices.fechaActual());
+        reporte.setEstado("Nuevo");
         return reporte;
     }
-
+    
 }

@@ -45,41 +45,44 @@ public class UsuarioResources {
         return usuariorepository.findAll();
     }
 
+    @GET
+    @Path("/allActivo")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Usuario> todosActivo() {
+        return usuarioservices.allActivos();
+    }
+
     //Crear Usuario
     @POST
     @Path("/add")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response agregarUsuario(Usuario usuario) {
-       Usuario u=usuarioservices.add(usuario);
+    public Usuario agregarUsuario(Usuario usuario) {
+        Usuario u = usuarioservices.add(usuario);
         try {
             if (usuariorepository.save(u, false)) {
-                return Response.status(201).entity("Se creo el Usuario").build();
-            } else {
-                return Response.status(400)
-                        .entity(usuariorepository.getException().getLocalizedMessage()).build();
+                return u;
             }
         } catch (Exception e) {
-            return Response.status(401).entity(e.getLocalizedMessage()).build();
+            System.out.println("agregarUsuario() " + e.getLocalizedMessage());
         }
+        return u;
     }
 
     //Crear Usuario desde android
     @POST
     @Path("/addCaptador")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response agregarUsuarioCaptador(Usuario usuario) {
+    public Usuario agregarUsuarioCaptador(Usuario usuario) {
 
         try {
             usuario = usuarioservices.addUsuarioCaptador(usuario);
             if (usuariorepository.save(usuario, false)) {
-                return Response.status(201).entity("Se creo el Usuario").build();
-            } else {
-                return Response.status(400)
-                        .entity(usuariorepository.getException().getLocalizedMessage()).build();
+                return usuario;
             }
         } catch (Exception e) {
-            return Response.status(401).entity(e.getLocalizedMessage()).build();
+            System.out.println("agregarUsuarioCaptador() " + e.getLocalizedMessage());
         }
+        return usuario;
     }
 
     //Actualizar usuario, mantengo los roles anteriores
@@ -122,18 +125,16 @@ public class UsuarioResources {
     @POST
     @Path("/checkUsuario")
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response buscarUsuario(Usuario usuario) {
+    public Usuario buscarUsuario(Usuario usuario) {
         try {
             Optional<Usuario> optional = usuarioservices.checkusuario(usuario);
             if (optional.isPresent()) {
-                return Response.status(201).entity("Existe el usuario").build();
-            } else {
-                return Response.status(400)
-                        .entity(usuariorepository.getException().getLocalizedMessage()).build();
+                return optional.get();
             }
         } catch (Exception e) {
-            return Response.status(401).entity(e.getLocalizedMessage()).build();
+            System.out.println("buscarUsuario() " + e.getLocalizedMessage());
         }
+        return usuario;
     }
 
     //Buscar usuario por ID
