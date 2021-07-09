@@ -95,6 +95,9 @@ el idUsuario sera el identificador del usuario, y el idRole, es el identificador
 - ### Para ver todos los usuarios 
 `/API-APP/resources/usuario/all`
 
+- ### Para ver todos los usuarios activos
+`/API-APP/resources/usuario/allActivo`
+
 - ### Para verificar si existe el usuario
 `/API-APP/resources/usuario/checkUsuario`
 
