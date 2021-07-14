@@ -67,6 +67,9 @@ el identificador es del reporte al cual iremos agregar otro estado
 
 `/API-APP/resources/reportes/all`
 
+- ### Para ver todos los reportes por un usuario especifico
+`/API-APP/resources/reportes/allByUser/{identificadorUsuario}`
+
 - ### Para buscar el reporte
 
 `/API-APP/resources/reportes/search/{id}`
