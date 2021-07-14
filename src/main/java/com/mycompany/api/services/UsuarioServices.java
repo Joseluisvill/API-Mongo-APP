@@ -116,7 +116,9 @@ public class UsuarioServices {
 
         try {
             //System.out.println(usuario.getEmail());
+            //System.out.println(AES.decrypt(usuario.getEmail(), secretKey));
             //System.out.println(AES.encrypt(usuario.getEmail(), secretKey));
+            
             //convierto el password a sha256
             String pass = usuario.getContrasena();
             usuario.setContrasena(Encrypt.sha256(pass));

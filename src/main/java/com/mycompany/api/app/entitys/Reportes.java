@@ -5,10 +5,10 @@
  */
 package com.mycompany.api.app.entitys;
 
-import com.avbravo.jmoordb.anotations.DatePattern;
 import com.avbravo.jmoordb.anotations.Embedded;
 import com.avbravo.jmoordb.anotations.Id;
 import com.avbravo.jmoordb.anotations.Ignore;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -57,6 +57,11 @@ public class Reportes {
 
 
     public Date getFecha() {
+        SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy/MM/dd");
+        if (fecha != null) {
+            String a = dateFormatter.format(fecha);
+            setFechaString(a);
+        }
         return fecha;
     }
 

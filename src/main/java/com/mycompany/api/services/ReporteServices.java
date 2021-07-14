@@ -22,19 +22,19 @@ import javax.inject.Inject;
  */
 @Stateless
 public class ReporteServices {
-    
+
     @Inject
     ReporteRepository reporteRepository;
-    
+
     @Inject
     FechaServices fechaservices;
-    
+
     @Inject
     CollectionincrementableServices collectionincrementableServices;
-    
+
     public ReporteServices() {
     }
-    
+
     public Reportes addEstado(Estado estado, String id) throws ParseException {
         Reportes reporte = new Reportes();
         reporte.setIdentificador(id);
@@ -44,7 +44,7 @@ public class ReporteServices {
         try {
             //agrego los datos de la busqueda al nuevo reporte
             reporte = optional.get();
-            
+
             estado.setFecha(fechaservices.fechaActual());
             //Creo una lista para agregar al nuevo estado con los anteriores
             List<Estado> list = new ArrayList<Estado>();
@@ -55,14 +55,14 @@ public class ReporteServices {
             //le adapto el nuevo estado a la lista de estados anteriores
             reporte.setEstados(list);
             reporte.setEstado(estado.getEstado());
-            
+
             return reporte;
         } catch (Exception e) {
             System.out.println("addEstado() " + e.getLocalizedMessage());
         }
         return reporte;
     }
-    
+
     public Reportes actualizar(String id, Reportes reporte) {
         Reportes re = new Reportes();
         //re.setIdentificador(id);
@@ -82,24 +82,36 @@ public class ReporteServices {
                 reporte.setEstados(list);
                 //mantengo el estado anterior tambien
                 reporte.setEstado(re.getEstado());
-                
+
                 reporte.setFecha(fechaservices.fechaActual());
                 return reporte;
             } else {
                 System.out.println("No esta presente");
             }
-            
+
         } catch (Exception e) {
             System.out.println("actualizar() " + e.getLocalizedMessage());
         }
         return reporte;
     }
-    
+
     public Reportes add(Reportes reporte) throws ParseException {
         reporte.setIdentificador("Reporte " + collectionincrementableServices.generate("Reportes").getCount().toString());
         reporte.setFecha(fechaservices.fechaActual());
         reporte.setEstado("Nuevo");
         return reporte;
     }
-    
+
+    public List<Reportes> searchbyUsuario(String id) {
+        try {
+            String query = "select * from Reportes where identificadorUsuario= '" + id + "'";
+
+            List<Reportes> reportes = reporteRepository.findBy(query);
+            return reportes;
+        } catch (Exception e) {
+            System.out.println("searchbyUsuario() " + e.getLocalizedMessage());
+        }
+        return null;
+    }
+
 }

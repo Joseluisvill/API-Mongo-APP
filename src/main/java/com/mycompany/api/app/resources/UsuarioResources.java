@@ -129,6 +129,7 @@ public class UsuarioResources {
         try {
             Optional<Usuario> optional = usuarioservices.checkusuario(usuario);
             if (optional.isPresent()) {
+                
                 return optional.get();
             }
         } catch (Exception e) {

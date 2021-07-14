@@ -124,4 +124,21 @@ public class ReportesResources {
         }
         return reporte;
     }
+    //Buscar un reporte en especifico por el identificador
+
+    @GET
+    @Path("/allByUser/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public List<Reportes> buscarIdUsuario(@PathParam("id") String id) {
+        List<Reportes> reportes = new ArrayList<Reportes>();
+        try {
+            reportes = reporteServices.searchbyUsuario(id);
+            if (reportes != null) {
+                return reportes;
+            }
+        } catch (Exception e) {
+            System.out.print("error" + e.getLocalizedMessage());
+        }
+        return null;
+    }
 }
