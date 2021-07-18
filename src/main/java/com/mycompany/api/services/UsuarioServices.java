@@ -115,6 +115,12 @@ public class UsuarioServices {
     public Optional checkusuario(Usuario usuario) {
 
         try {
+            usuario.setContrasena(AES.decrypt(usuario.getContrasena(), secretKey));
+            usuario.setEmail(AES.decrypt(usuario.getEmail(), secretKey));
+            usuario.setIdentificador(AES.decrypt(usuario.getIdentificador(), secretKey));
+            usuario.setNombre(AES.decrypt(usuario.getNombre(), secretKey));
+            usuario.setTelefono(AES.decrypt(usuario.getTelefono(), secretKey));
+            
             //System.out.println(usuario.getEmail());
             //System.out.println(AES.decrypt(usuario.getEmail(), secretKey));
             //System.out.println(AES.encrypt(usuario.getEmail(), secretKey));
