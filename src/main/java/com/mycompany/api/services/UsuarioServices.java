@@ -36,7 +36,7 @@ public class UsuarioServices {
     }
 
     public Usuario add(Usuario usuario) {
-
+        usuario=Usuariodescrypt(usuario);
         try {
             String pass = usuario.getContrasena();
             usuario.setContrasena(Encrypt.sha256(pass));
@@ -51,9 +51,10 @@ public class UsuarioServices {
         return usuario;
     }
 
-    public Usuario actulizar(Usuario usuario) {
+    public Usuario actualizar(Usuario usuario) {
+        
         Usuario u = new Usuario();
-        u.setIdentificador(usuario.getIdentificador());
+        u=Usuariodescrypt(usuario);
         Optional<Usuario> optional = usuariorepository.findById(u);
         List<RolesAsignados> list = new ArrayList<RolesAsignados>();
 
@@ -81,6 +82,7 @@ public class UsuarioServices {
     }
 
     public Usuario addUsuarioCaptador(Usuario usuario) {
+        usuario=Usuariodescrypt(usuario);
         List<RolesAsignados> list = new ArrayList<RolesAsignados>();
         try {
             //id del captador es 3
@@ -113,17 +115,9 @@ public class UsuarioServices {
     }
 
     public Optional checkusuario(Usuario usuario) {
-
         try {
             usuario.setContrasena(AES.decrypt(usuario.getContrasena(), secretKey));
             usuario.setEmail(AES.decrypt(usuario.getEmail(), secretKey));
-            usuario.setIdentificador(AES.decrypt(usuario.getIdentificador(), secretKey));
-            usuario.setNombre(AES.decrypt(usuario.getNombre(), secretKey));
-            usuario.setTelefono(AES.decrypt(usuario.getTelefono(), secretKey));
-            
-            //System.out.println(usuario.getEmail());
-            //System.out.println(AES.decrypt(usuario.getEmail(), secretKey));
-            //System.out.println(AES.encrypt(usuario.getEmail(), secretKey));
             
             //convierto el password a sha256
             String pass = usuario.getContrasena();
@@ -172,6 +166,17 @@ public class UsuarioServices {
             System.out.println("addRol() " + e.getLocalizedMessage());
         }
 
+        return usuario;
+    }
+    public Usuario Usuariodescrypt(Usuario usuario)
+    {
+        //Desencripto los valores que recibo del cliente
+        usuario.setIdentificador(AES.decrypt(usuario.getIdentificador(), secretKey));
+        usuario.setContrasena(AES.decrypt(usuario.getContrasena(), secretKey));
+        usuario.setEmail(AES.decrypt(usuario.getEmail(), secretKey));
+        usuario.setNombre(AES.decrypt(usuario.getNombre(), secretKey));
+        usuario.setTelefono(AES.decrypt(usuario.getTelefono(), secretKey));
+        
         return usuario;
     }
 
