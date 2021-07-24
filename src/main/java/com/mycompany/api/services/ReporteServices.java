@@ -98,7 +98,7 @@ public class ReporteServices {
     public Reportes add(Reportes reporte) throws ParseException {
         reporte.setIdentificador("Reporte " + collectionincrementableServices.generate("Reportes").getCount().toString());
         reporte.setFecha(fechaservices.fechaActual());
-        reporte.setEstado("Nuevo");
+        reporte.setEstado("Pendiente");
         return reporte;
     }
 

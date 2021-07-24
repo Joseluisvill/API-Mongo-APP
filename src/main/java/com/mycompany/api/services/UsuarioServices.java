@@ -36,7 +36,7 @@ public class UsuarioServices {
     }
 
     public Usuario add(Usuario usuario) {
-        usuario=Usuariodescrypt(usuario);
+        usuario = Usuariodescrypt(usuario, "add");
         try {
             String pass = usuario.getContrasena();
             usuario.setContrasena(Encrypt.sha256(pass));
@@ -52,25 +52,25 @@ public class UsuarioServices {
     }
 
     public Usuario actualizar(Usuario usuario) {
-        
+
         Usuario u = new Usuario();
-        u=Usuariodescrypt(usuario);
-        Optional<Usuario> optional = usuariorepository.findById(u);
+
+        Optional<Usuario> optional = usuariorepository.findById(Usuariodescrypt(usuario, "up"));
         List<RolesAsignados> list = new ArrayList<RolesAsignados>();
 
-        String pass;
         try {
             if (optional.isPresent()) {
                 //obtengo el usuario anterior para actualizar los datos nuevos
                 u = optional.get();
-                System.out.println(optional.get());
                 //mantengo los roles con que contaba el usuario.
                 list = u.getRoles();
                 //agrego la lista de roles asignados al usuario a actualizar
                 usuario.setRoles(list);
-                pass = usuario.getContrasena();
-                if (!pass.isEmpty()) {
-                    usuario.setContrasena(Encrypt.sha256(pass));
+                //verifico contraseña
+                if (usuario.getContrasena().length() == 64) {
+                    usuario.setContrasena(u.getContrasena());
+                } else {
+                    usuario.setContrasena(Encrypt.sha256(usuario.getContrasena()));
                 }
             }
 
@@ -82,7 +82,7 @@ public class UsuarioServices {
     }
 
     public Usuario addUsuarioCaptador(Usuario usuario) {
-        usuario=Usuariodescrypt(usuario);
+        usuario = Usuariodescrypt(usuario, "add");
         List<RolesAsignados> list = new ArrayList<RolesAsignados>();
         try {
             //id del captador es 3
@@ -118,7 +118,7 @@ public class UsuarioServices {
         try {
             usuario.setContrasena(AES.decrypt(usuario.getContrasena(), secretKey));
             usuario.setEmail(AES.decrypt(usuario.getEmail(), secretKey));
-            
+
             //convierto el password a sha256
             String pass = usuario.getContrasena();
             usuario.setContrasena(Encrypt.sha256(pass));
@@ -168,15 +168,17 @@ public class UsuarioServices {
 
         return usuario;
     }
-    public Usuario Usuariodescrypt(Usuario usuario)
-    {
+
+    public Usuario Usuariodescrypt(Usuario usuario, String metodo) {
         //Desencripto los valores que recibo del cliente
         usuario.setIdentificador(AES.decrypt(usuario.getIdentificador(), secretKey));
-        usuario.setContrasena(AES.decrypt(usuario.getContrasena(), secretKey));
+        if (metodo == "add") {
+            usuario.setContrasena(AES.decrypt(usuario.getContrasena(), secretKey));
+        }
         usuario.setEmail(AES.decrypt(usuario.getEmail(), secretKey));
         usuario.setNombre(AES.decrypt(usuario.getNombre(), secretKey));
         usuario.setTelefono(AES.decrypt(usuario.getTelefono(), secretKey));
-        
+
         return usuario;
     }
 

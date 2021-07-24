@@ -91,7 +91,7 @@ public class UsuarioResources {
     @Consumes(MediaType.APPLICATION_JSON)
     public Response actualizarUsuario(Usuario usuario) {
         try {
-            Usuario u = usuarioservices.actulizar(usuario);
+            Usuario u = usuarioservices.actualizar(usuario);
             if (usuariorepository.update(u)) {
 
                 return Response.status(201).entity("Update Ok").build();
