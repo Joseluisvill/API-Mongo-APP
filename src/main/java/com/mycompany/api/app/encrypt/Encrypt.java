@@ -20,4 +20,5 @@ public class Encrypt {
                 .toString();
         return sha256hex;
     }
+
 }

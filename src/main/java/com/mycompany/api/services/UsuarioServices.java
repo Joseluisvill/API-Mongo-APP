@@ -36,7 +36,7 @@ public class UsuarioServices {
     }
 
     public Usuario add(Usuario usuario) {
-        usuario = Usuariodescrypt(usuario, "add");
+        usuario = Usuariodescrypt(usuario);
         try {
             String pass = usuario.getContrasena();
             usuario.setContrasena(Encrypt.sha256(pass));
@@ -53,24 +53,33 @@ public class UsuarioServices {
 
     public Usuario actualizar(Usuario usuario) {
 
-        Usuario u = new Usuario();
+        Usuario viejo = new Usuario();
+        Usuario nuevo = new Usuario();
+        String a, b;
+        //nuevo=usuario;
+        //desencrypto los nuevos datos recibido desde el cliente
+        nuevo = Usuariodescrypt(usuario);
+        Optional<Usuario> optional = usuariorepository.findById(nuevo);
 
-        Optional<Usuario> optional = usuariorepository.findById(Usuariodescrypt(usuario, "up"));
         List<RolesAsignados> list = new ArrayList<RolesAsignados>();
 
         try {
             if (optional.isPresent()) {
                 //obtengo el usuario anterior para actualizar los datos nuevos
-                u = optional.get();
+                viejo = optional.get();
+                System.out.println("Contrasena vieja:  " + viejo.getContrasena());
                 //mantengo los roles con que contaba el usuario.
-                list = u.getRoles();
+                list = viejo.getRoles();
                 //agrego la lista de roles asignados al usuario a actualizar
-                usuario.setRoles(list);
+                nuevo.setRoles(list);
                 //verifico contraseña
-                if (usuario.getContrasena().length() == 64) {
-                    usuario.setContrasena(u.getContrasena());
+                System.out.println(nuevo.getContrasena() + "  " + viejo.getContrasena());
+                if (nuevo.getContrasena().equals(viejo.getContrasena())) {
+                    System.out.println("Mantengo La vieja");
+                    nuevo.setContrasena(viejo.getContrasena());
                 } else {
-                    usuario.setContrasena(Encrypt.sha256(usuario.getContrasena()));
+                    System.out.println("Nueva " + nuevo.getContrasena());
+                    nuevo.setContrasena(Encrypt.sha256(nuevo.getContrasena()));
                 }
             }
 
@@ -78,11 +87,11 @@ public class UsuarioServices {
             System.out.println("actualizarUsuario() " + e.getLocalizedMessage());
         }
 
-        return usuario;
+        return nuevo;
     }
 
     public Usuario addUsuarioCaptador(Usuario usuario) {
-        usuario = Usuariodescrypt(usuario, "add");
+        usuario = Usuariodescrypt(usuario);
         List<RolesAsignados> list = new ArrayList<RolesAsignados>();
         try {
             //id del captador es 3
@@ -115,24 +124,27 @@ public class UsuarioServices {
     }
 
     public Optional checkusuario(Usuario usuario) {
+
+        usuario.setContrasena(AES.decrypt(usuario.getContrasena(), secretKey));
+        usuario.setEmail(AES.decrypt(usuario.getEmail(), secretKey));
+
+        //convierto el password a sha256
+        String pass = usuario.getContrasena();
+        usuario.setContrasena(Encrypt.sha256(pass));
+
+        //String del query para la busqueda del usuario
+        String query = "select * from Usuario where email='" + usuario.getEmail() + "' and contrasena='" + usuario.getContrasena() + "'";
+
         try {
-            usuario.setContrasena(AES.decrypt(usuario.getContrasena(), secretKey));
-            usuario.setEmail(AES.decrypt(usuario.getEmail(), secretKey));
-
-            //convierto el password a sha256
-            String pass = usuario.getContrasena();
-            usuario.setContrasena(Encrypt.sha256(pass));
-
-            //String del query para la busqueda del usuario
-            String query = "select * from Usuario where email='" + usuario.getEmail() + "' and contrasena='" + usuario.getContrasena() + "'";
-
             Optional<Usuario> optional = usuariorepository.findFirst(query);
-            return optional;
-
+            if (optional.isPresent()) {
+                return optional;
+            }
         } catch (Exception e) {
             System.out.println("checkusuario() " + e.getLocalizedMessage());
         }
         return Optional.empty();
+
     }
 
     public Usuario addRol(String idUsuario, int idRole) {
@@ -169,12 +181,10 @@ public class UsuarioServices {
         return usuario;
     }
 
-    public Usuario Usuariodescrypt(Usuario usuario, String metodo) {
+    public Usuario Usuariodescrypt(Usuario usuario) {
         //Desencripto los valores que recibo del cliente
         usuario.setIdentificador(AES.decrypt(usuario.getIdentificador(), secretKey));
-        if (metodo == "add") {
-            usuario.setContrasena(AES.decrypt(usuario.getContrasena(), secretKey));
-        }
+        usuario.setContrasena(AES.decrypt(usuario.getContrasena(), secretKey));
         usuario.setEmail(AES.decrypt(usuario.getEmail(), secretKey));
         usuario.setNombre(AES.decrypt(usuario.getNombre(), secretKey));
         usuario.setTelefono(AES.decrypt(usuario.getTelefono(), secretKey));
