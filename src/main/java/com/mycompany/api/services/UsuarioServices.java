@@ -55,8 +55,6 @@ public class UsuarioServices {
 
         Usuario viejo = new Usuario();
         Usuario nuevo = new Usuario();
-        String a, b;
-        //nuevo=usuario;
         //desencrypto los nuevos datos recibido desde el cliente
         nuevo = Usuariodescrypt(usuario);
         Optional<Usuario> optional = usuariorepository.findById(nuevo);
@@ -81,6 +79,7 @@ public class UsuarioServices {
                     System.out.println("Nueva " + nuevo.getContrasena());
                     nuevo.setContrasena(Encrypt.sha256(nuevo.getContrasena()));
                 }
+                return nuevo;
             }
 
         } catch (Exception e) {
@@ -109,11 +108,12 @@ public class UsuarioServices {
             usuario.setRoles(list);
             String pass = usuario.getContrasena();
             usuario.setContrasena(Encrypt.sha256(pass));
+            return usuario;
         } catch (Exception e) {
             System.out.println("addUsuarioCaptador() " + e.getLocalizedMessage());
         }
 
-        return usuario;
+        return null;
     }
 
     public List<Usuario> allActivos() {
